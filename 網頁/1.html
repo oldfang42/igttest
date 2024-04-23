@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gambling Game</title>
+<style>
+    img {
+        max-width: 100%; 
+        max-height: 100%;
+        object-fit: contain;
+    }
+
+    body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        margin: 0;
+        padding: 0;
+    }
+
+    #startScreen, #instructionScreen, #gameScreen {
+        display: none;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    #startScreen.visible, #instructionScreen.visible, #gameScreen.visible {
+        display: flex;
+    }
+
+    #instruction {
+        margin-bottom: 20px;
+    }
+
+    #money {
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+
+    #trial {
+        font-size: 18px;
+        margin-bottom: 20px;
+    }
+
+    .button-container {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: nowrap;
+        margin-top: 20px;
+    }
+
+    .button {
+        width: 150px;
+        height: 150px; 
+        margin: 10px;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden; 
+    }
+
+    .button img {
+        max-width: 100%; 
+        max-height: 100%;
+        object-fit: contain;
+        display: inline-block; 
+        vertical-align: middle; 
+    }
+
+    .image-container {
+        display: inline-flex; 
+        align-items: center; 
+    }
+
+    .image-container img {
+        margin: 0; 
+        width: 100px; 
+        height: auto; 
+    }
+
+    .tooltip {
+        visibility: hidden;
+        width: 120px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px;
+        position: absolute;
+        z-index: 1;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    .button:hover .tooltip {
+        visibility: visible;
+    }
+</style>
+</head>
+<body>
+
+<div id="startScreen" class="visible">
+    <h1>Welcome to Gambling Game</h1>
+    <label for="name">Please enter your name:</label><br>
+    <input type="text" id="name" name="name">
+    <button onclick="startGame()">Start Game</button>
+</div>
+
+<div id="instructionScreen">
+    <div id="instruction">
+        <h2>Instructions</h2>
+        <p>In this task, you play a "gambling" game. You need to choose one of 4 buttons (A, B, C, or D) with the mouse.</p>
+        <p>Each time, you can win some money, but you may sometimes also have to pay a fee to the bank. After each trial, you need to collect your money, which will adjust your pot of money.</p>
+        <p>You start with a loan of $2000.</p>
+        <p>There are 100 trials (taking 5 minutes or so).</p>
+        <p>Go on until it stops and see how much you can make on top the loan of $2000.</p>
+        <p>Press Enter to start the game. Good luck!</p>
+    </div>
+</div>
+
+<div id="gameScreen">
+    <div id="money">Loan: $2000</div>
+    <div id="trial">Trial: 1</div>
+    <div class="button-container">
+        <div class="button" id="buttonA" onclick="playGame('A')">
+            <img src="button_A_image.png" alt="Button A">
+        </div>
+        <div class="button" id="buttonB" onclick="playGame('B')">
+            <img src="button_B_image.png" alt="Button B">
+        </div>
+        <div class="button" id="buttonC" onclick="playGame('C')">
+            <img src="button_C_image.png" alt="Button C">
+        </div>
+        <div class="button" id="buttonD" onclick="playGame('D')">
+            <img src="button_D_image.png" alt="Button D">
+        </div>
+    </div>
+    <div id="result"></div>
+</div>
+
+<script>
+let playerName = "";
+let money = 2000;
+let trial = 1;
+let gameData = [];
+
+function startGame() {
+    playerName = document.getElementById("name").value.trim();
+    if (playerName === "") {
+        alert("Please enter your name.");
+        return;
+    }
+    document.getElementById("startScreen").classList.remove("visible");
+    document.getElementById("instructionScreen").classList.add("visible");
+}
+
+function showInstruction() {
+    document.getElementById("instructionScreen").classList.remove("visible");
+    document.getElementById("gameScreen").classList.add("visible");
+}
+
+function playGame(choice) {
+    let reactionTime = new Date().toLocaleString();
+    let winAmount = 0;
+    let lossAmount = 0;
+    let random = Math.random();
+
+    let winImageSrc = "";
+    let lossImageSrc = "";
+
+    if (choice === 'A' || choice === 'B') {
+        if (random < 0.5) {
+            winAmount = 100;
+            lossAmount = 0;
+            winImageSrc = "win_100.png";
+        } else {
+            winAmount = 100;
+            lossAmount = 250;
+            winImageSrc = "win_100.png";
+            lossImageSrc = "loss_250.png";
+        }
+    } else {
+        if (random < 0.5) {
+            winAmount = 50;
+            lossAmount = 0;
+            winImageSrc = "win_50.png";
+        } else {
+            winAmount = 50;
+            lossAmount = 50;
+            winImageSrc = "win_50.png";
+            lossImageSrc = "loss_50.png";
+        }
+    }
+
+    money += (winAmount - lossAmount);
+
+    let gameRoundData = {
+        playerName: playerName,
+        round: trial,
+        choice: choice,
+        reactionTime: reactionTime,
+        winAmount: winAmount,
+        lossAmount: lossAmount,
+        currentMoney: money
+    };
+
+    gameData.push(gameRoundData);
+
+    document.getElementById("money").textContent = "Loan: $" + money;
+
+    let resultContainer = document.getElementById("result");
+    resultContainer.innerHTML = ""; // Clear previous images
+
+    // Insert images based on win or loss
+    if (winImageSrc !== "") {
+        let winImage = document.createElement("img");
+        winImage.src = winImageSrc;
+        winImage.alt = "Win Image";
+        resultContainer.appendChild(winImage);
+    }
+    if (lossImageSrc !== "") {
+        let lossImage = document.createElement("img");
+        lossImage.src = lossImageSrc;
+        lossImage.alt = "Loss Image";
+        resultContainer.appendChild(lossImage);
+    }
+
+    document.getElementById("trial").textContent = "Trial: " + trial;
+
+    if (trial === 100) {
+        alert("Game Over! Your final amount: $" + money);
+        writeGameDataToFile();
+    } else {
+        trial++;
+    }
+}
+
+function writeGameDataToFile() {
+    let dataString = "Player Name, Round, Choice, Reaction Time, Win Amount, Loss Amount, Current Money\n";
+    gameData.forEach(function(roundData) {
+        dataString += roundData.playerName + ", " + roundData.round + ", " + roundData.choice + ", " + roundData.reactionTime + ", " + roundData.winAmount + ", " + roundData.lossAmount + ", " + roundData.currentMoney + "\n";
+    });
+
+    let blob = new Blob([dataString], { type: "text/plain" });
+    let url = URL.createObjectURL(blob);
+    let a = document.createElement("a");
+    a.href = url;
+    a.download = playerName + "_game_data.txt";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    resetGame();
+}
+
+function resetGame() {
+    playerName = "";
+    money = 2000;
+    trial = 1;
+    gameData = [];
+    document.getElementById("startScreen").classList.add("visible");
+    document.getElementById("instructionScreen").classList.remove("visible");
+    document.getElementById("gameScreen").classList.remove("visible");
+    document.getElementById("name").value = "";
+    document.getElementById("money").textContent = "Loan: $" + money;
+    document.getElementById("result").innerHTML = "";
+}
+
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Enter') {
+        if (document.getElementById("startScreen").classList.contains("visible")) {
+            startGame();
+        } else if (document.getElementById("instructionScreen").classList.contains("visible")) {
+            showInstruction();
+        }
+    }
+});
+
+</script>
+
+</body>
+</html>
