@@ -113,20 +113,20 @@
 
 <div id="instructionScreen">
     <div id="instruction">
-        <h2>Instructions</h2>
-        <p>In this task, you play a "gambling" game. You need to choose one of 4 buttons (A, B, C, or D) with the mouse.</p>
-        <p>Each time, you can win some money, but you may sometimes also have to pay a fee to the bank. After each trial, you need to collect your money, which will adjust your pot of money.</p>
-        <p>You start with a loan of $2000.</p>
-        <p>There are 100 trials (taking 5 minutes or so).</p>
-        <p>Go on until it stops and see how much you can make on top the loan of $2000.</p>
-        <p>Press Enter to start the game. Good luck!</p>
-        <button onclick="showInstruction()">Start Game</button>
+        <h2>指導語</h2>
+        <p>在這個任務中，你正在進行一個「賭博」遊戲。 您需要使用滑鼠選擇 4 個按鈕（A、B、C 或 D）之一。</p>
+        <p>每次您都可以贏得一些錢，但有時您可能還需要向銀行支付費用。 每次按下按鈕，你會獲得一定的金額，會調整你的金額。</p>
+        <p>您從 2000 美元的貸款開始。</p>
+        <p>有 100 次試驗（大約需要 5 分鐘）。</p>
+        <p>繼續下去直到停止，看看除了 2000 美元的貸款外，您還能賺多少錢。</p>
+        <p>按 Enter 開始遊戲。 祝你好運！</p>
+        <button onclick="showInstruction()">開始遊戲</button>
 
     </div>
 </div>
 
 <div id="gameScreen">
-    <div id="money">Loan: $2000</div>
+    <div id="money">Money: $2000</div>
     <div id="trial">Trial: 1</div>
     <div class="button-container">
         <div class="button" id="buttonA" onclick="playGame('A')">
@@ -213,7 +213,7 @@ function playGame(choice) {
 
     gameData.push(gameRoundData);
 
-    document.getElementById("money").textContent = "Loan: $" + money;
+    document.getElementById("money").textContent = "Money: $" + money;
 
     let resultContainer = document.getElementById("result");
     resultContainer.innerHTML = ""; // Clear previous images
@@ -235,10 +235,12 @@ function playGame(choice) {
     document.getElementById("trial").textContent = "Trial: " + trial;
 
     if (trial === 100) {
-        alert("Game Over! Your final amount: $" + money);
+        alert("遊戲結束! Your final amount: $" + money +"結束後請將檔案回傳問卷！");
         writeGameDataToFile();
     } else {
+        alert("Trial " + trial + " finished. Press OK to continue.");
         trial++;
+
     }
 }
 
@@ -280,7 +282,7 @@ document.addEventListener('keydown', function(event) {
             startGame();
         } else if (document.getElementById("instructionScreen").classList.contains("visible")) {
             showInstruction();
-        }
+        } 
     }
 });
 
