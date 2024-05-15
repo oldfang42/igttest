@@ -5,6 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gambling Game</title>
 <style>
+    h1 {
+    position: fixed;
+    top: 50px;
+    left: 50%; 
+    transform: translateX(-50%);
+    background-color: white; 
+    padding: 10px 20px; 
+    margin: 0;
+    z-index: 999; 
+    width: 100%; 
+    text-align: center; 
+    }
     img {
         max-width: 100%; 
         max-height: 100%;
@@ -55,12 +67,21 @@
     }
 
     .button {
-        width: 150px;
-        height: 150px; 
-        margin: 10px;
-        cursor: pointer;
-        position: relative;
-        overflow: hidden; 
+    background-color: #4CAF50; 
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    transition-duration: 0.4s; 
+    cursor: pointer;
+    border-radius: 8px; 
+    }
+    .button:hover {
+    background-color: #45a049; /* 深绿色 */
     }
 
     .button img {
@@ -108,26 +129,28 @@
     <h1>Welcome to lowa Gambling Task Game</h1>
     <label for="name">Please enter your name:</label><br>
     <input type="text" id="name" name="name">
-    <button onclick="startGame()">Start Game</button>
+    <p></p>
+    <button class="button primary large" onclick="startGame()">Start Game</button>
 </div>
 
 <div id="instructionScreen">
     <div id="instruction">
-        <h2>指導語</h2>
-        <p>在這個任務中，你正在進行一個「賭博」遊戲。 您需要使用滑鼠選擇 4 個按鈕（A、B、C 或 D）之一。</p>
-        <p>每次您都可以贏得一些錢，但有時您可能還需要向銀行支付費用。 每次按下按鈕，你會獲得一定的金額，會調整你的金額。</p>
-        <p>您從 2000 美元的貸款開始。</p>
-        <p>有 100 次試驗（大約需要 5 分鐘）。</p>
-        <p>繼續下去直到停止，看看除了 2000 美元的貸款外，您還能賺多少錢。</p>
-        <p>按 Enter 開始遊戲。 祝你好運！</p>
-        <button onclick="showInstruction()">開始遊戲</button>
+        <h1>指導語</h1>
+        <h2>在這個任務中，你正在進行一個「賭博」遊戲。 您需要使用滑鼠選擇 4 個按鈕（A、B、C 或 D）之一。</h2>
+        <h2>每次您都可以贏得一些錢，但有時您可能還需要向銀行支付費用。 每次按下按鈕，你會獲得一定的金額。</h2>
+        <h2>您從 2000 元的本金開始。</h2>
+        <h2>有 100 次試驗（大約需要 5 分鐘）。</h2>
+        <h2></h2>
+        <h2>按 Enter 開始遊戲。 祝你好運！</h2>
+        <p></p>
+        <button class="button primary large" onclick="showInstruction()">開始遊戲</button>
 
     </div>
 </div>
 
 <div id="gameScreen">
-    <div id="money">Money: $2000</div>
-    <div id="trial">Trial: 1</div>
+    <div id="money">金額: $2000</div>
+    <div id="trial">第幾次: 1</div>
     <div class="button-container">
         <div class="button" id="buttonA" onclick="playGame('A')">
             <img src="button_A_image.png" alt="Button A">
@@ -154,7 +177,7 @@ let gameData = [];
 function startGame() {
     playerName = document.getElementById("name").value.trim();
     if (playerName === "") {
-        alert("Please enter your name.");
+        alert("請輸入你的名字.");
         return;
     }
     document.getElementById("startScreen").classList.remove("visible");
@@ -213,7 +236,7 @@ function playGame(choice) {
 
     gameData.push(gameRoundData);
 
-    document.getElementById("money").textContent = "Money: $" + money;
+    document.getElementById("money").textContent = "金額: $" + money;
 
     let resultContainer = document.getElementById("result");
     resultContainer.innerHTML = ""; // Clear previous images
@@ -232,13 +255,13 @@ function playGame(choice) {
         resultContainer.appendChild(lossImage);
     }
 
-    document.getElementById("trial").textContent = "Trial: " + trial;
+    document.getElementById("trial").textContent = "第幾次: " + trial;
 
     if (trial === 100) {
-        alert("遊戲結束! Your final amount: $" + money +"結束後請將檔案回傳問卷！");
+        alert("遊戲結束! 你最後的收益: $" + money +"結束後請將檔案回傳問卷！");
         writeGameDataToFile();
     } else {
-        alert("Trial " + trial + " finished. Press OK to continue.");
+        alert("第" + trial + "次結束，請按確定繼續遊戲");
         trial++;
 
     }
