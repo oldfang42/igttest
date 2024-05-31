@@ -270,7 +270,12 @@ function playGame(choice) {
     if (trial === 250) {
         alert("遊戲結束! 你最後的收益: $" + money +"結束後請將檔案回傳問卷！");
         writeGameDataToFile();
-    } else {
+    } 
+    else if (trial%50==0){
+        alert("第" + trial + "次結束，請稍做休息，按確定繼續遊戲");
+        trial++; 
+    }
+    else {
         alert("第" + trial + "次結束，請按確定繼續遊戲");
         trial++;
     }
