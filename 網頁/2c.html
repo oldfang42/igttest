@@ -6,16 +6,16 @@
 <title>Gambling Game</title>
 <style>
     h1 {
-    position: fixed;
-    top: 50px;
-    left: 50%; 
-    transform: translateX(-50%);
-    background-color: white; 
-    padding: 10px 20px; 
-    margin: 0;
-    z-index: 999; 
-    width: 100%; 
-    text-align: center; 
+        position: fixed;
+        top: 50px;
+        left: 50%; 
+        transform: translateX(-50%);
+        background-color: white; 
+        padding: 10px 20px; 
+        margin: 0;
+        z-index: 999; 
+        width: 100%; 
+        text-align: center; 
     }
     img {
         max-width: 100%; 
@@ -67,21 +67,21 @@
     }
 
     .button {
-    background-color: #4CAF50; 
-    border: none;
-    color: white;
-    padding: 15px 32px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
-    transition-duration: 0.4s; 
-    cursor: pointer;
-    border-radius: 8px; 
+        background-color: #4CAF50; 
+        border: none;
+        color: white;
+        padding: 15px 32px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        transition-duration: 0.4s; 
+        cursor: pointer;
+        border-radius: 8px; 
     }
     .button:hover {
-    background-color: #45a049; /* 深绿色 */
+        background-color: #45a049;
     }
 
     .button img {
@@ -139,7 +139,9 @@
         <h2>在這個任務中，你正在進行一個「風險決策」遊戲。 您需要使用滑鼠選擇 4 個按鈕（A、B、C 或 D）之一。</h2>
         <h2>每次您都可以贏得一些錢，但有時您可能還需要向銀行支付費用。 每次按下按鈕，你會獲得一定的金額。</h2>
         <h2>您從 2000 元的本金開始。</h2>
-        <h2>有 250 次試驗（大約需要 5 分鐘）。</h2>
+        <h2>有 250 次試驗（大約需要 10-20 分鐘）。</h2>
+        <h2>請準備好耳機，在完全安靜的環境下進行</h2>
+        <h2>請將音量調至適合的大小，約為50%</h2>
         <h2></h2>
         <h2>按 Enter 開始遊戲。 祝你好運！</h2>
         <p></p>
@@ -187,6 +189,13 @@ function startGame() {
 function showInstruction() {
     document.getElementById("instructionScreen").classList.remove("visible");
     document.getElementById("gameScreen").classList.add("visible");
+    playAudio();
+}
+
+function playAudio() {
+    audio.play().catch(error => {
+        console.error("Audio playback failed:", error);
+    });
 }
 
 function playGame(choice) {
@@ -197,7 +206,7 @@ function playGame(choice) {
 
     let winImageSrc = "";
     let lossImageSrc = "";
-    <audio controls src="/media/cc0-audio/t-rex-roar.mp3"></audio>
+
     if (choice === 'A' || choice === 'B') {
         if (random < 0.5) {
             winAmount = 100;
@@ -260,15 +269,9 @@ function playGame(choice) {
     if (trial === 250) {
         alert("遊戲結束! 你最後的收益: $" + money +"結束後請將檔案回傳問卷！");
         writeGameDataToFile();
-    } 
-    else if(trial% 50 ==0 ) {
-        alert("第" + trial + "次結束，請稍做休息，休息後請按確定繼續遊戲");
-        trial++;
-    }
-    else {
+    } else {
         alert("第" + trial + "次結束，請按確定繼續遊戲");
         trial++;
-
     }
 }
 
@@ -313,7 +316,6 @@ document.addEventListener('keydown', function(event) {
         } 
     }
 });
-
 </script>
 
 </body>
