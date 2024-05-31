@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gambling Game</title>
+<style>
+    h1 {
+        position: fixed;
+        top: 50px;
+        left: 50%; 
+        transform: translateX(-50%);
+        background-color: white; 
+        padding: 10px 20px; 
+        margin: 0;
+        z-index: 999; 
+        width: 100%; 
+        text-align: center; 
+    }
+    img {
+        max-width: 100%; 
+        max-height: 100%;
+        object-fit: contain;
+    }
+
+    body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        margin: 0;
+        padding: 0;
+    }
+
+    #startScreen, #instructionScreen, #gameScreen {
+        display: none;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    #startScreen.visible, #instructionScreen.visible, #gameScreen.visible {
+        display: flex;
+    }
+
+    #instruction {
+        margin-bottom: 20px;
+    }
+
+    #money {
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+
+    #trial {
+        font-size: 18px;
+        margin-bottom: 20px;
+    }
+
+    .button-container {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: nowrap;
+        margin-top: 20px;
+    }
+
+    .button {
+        background-color: #4CAF50; 
+        border: none;
+        color: white;
+        padding: 15px 32px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        transition-duration: 0.4s; 
+        cursor: pointer;
+        border-radius: 8px; 
+    }
+    .button:hover {
+        background-color: #45a049;
+    }
+
+    .button img {
+        max-width: 100%; 
+        max-height: 100%;
+        object-fit: contain;
+        display: inline-block; 
+        vertical-align: middle; 
+    }
+
+    .image-container {
+        display: inline-flex; 
+        align-items: center; 
+    }
+
+    .image-container img {
+        margin: 0; 
+        width: 100px; 
+        height: auto; 
+    }
+
+    .tooltip {
+        visibility: hidden;
+        width: 120px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px;
+        position: absolute;
+        z-index: 1;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    .button:hover .tooltip {
+        visibility: visible;
+    }
+</style>
+</head>
+<body>
+
+<div id="startScreen" class="visible">
+    <h1>歡迎來到Iowa Gambling Task遊戲</h1>
+    <label for="name">請輸入你的本名：</label><br>
+    <input type="text" id="name" name="name">
+    <p></p>
+    <button class="button primary large" onclick="startGame()">開始遊戲</button>
+</div>
+
+<div id="instructionScreen">
+    <div id="instruction">
+        <h1>指導語</h1>
+        <h2>在這個任務中，你正在進行一個「風險決策」遊戲。 您需要使用滑鼠選擇 4 個按鈕（A、B、C 或 D）之一。</h2>
+        <h2>每次您都可以贏得一些錢，但有時您可能還需要向銀行支付費用。 每次按下按鈕，你會獲得一定的金額。</h2>
+        <h2>您從 2000 元的本金開始。</h2>
+        <h2>有 250 次試驗（大約需要 10-20 分鐘）。</h2>
+        <h2>請準備好耳機，在完全安靜的環境下進行</h2>
+        <h2>請將音量調至適合的大小，約為50%</h2>
+        <h2></h2>
+        <h2>按 Enter 開始遊戲。 祝你好運！</h2>
+        <p></p>
+        <button class="button primary large" onclick="showInstruction()">開始遊戲</button>
+
+    </div>
+</div>
+
+<div id="gameScreen">
+    <div id="money">金額: $2000</div>
+    <div id="trial">第幾次: 1</div>
+    <div class="button-container">
+        <div class="button" id="buttonA" onclick="playGame('A')">
+            <img src="button_A_image.png" alt="Button A">
+        </div>
+        <div class="button" id="buttonB" onclick="playGame('B')">
+            <img src="button_B_image.png" alt="Button B">
+        </div>
+        <div class="button" id="buttonC" onclick="playGame('C')">
+            <img src="button_C_image.png" alt="Button C">
+        </div>
+        <div class="button" id="buttonD" onclick="playGame('D')">
+            <img src="button_D_image.png" alt="Button D">
+        </div>
+    </div>
+    <div id="result"></div>
+</div>
+
+<script>
+let playerName = "";
+let money = 2000;
+let trial = 1;
+let gameData = [];
+let audio = new Audio('2x.mp3');
+
+function startGame() {
+    playerName = document.getElementById("name").value.trim();
+    if (playerName === "") {
+        alert("請輸入你的名字.");
+        return;
+    }
+    document.getElementById("startScreen").classList.remove("visible");
+    document.getElementById("instructionScreen").classList.add("visible");
+}
+
+function showInstruction() {
+    document.getElementById("instructionScreen").classList.remove("visible");
+    document.getElementById("gameScreen").classList.add("visible");
+    playAudio();
+}
+
+function playAudio() {
+    audio.play().catch(error => {
+        console.error("Audio playback failed:", error);
+    });
+}
+
+function playGame(choice) {
+    let reactionTime = new Date().toLocaleString();
+    let winAmount = 0;
+    let lossAmount = 0;
+    let random = Math.random();
+
+    let winImageSrc = "";
+    let lossImageSrc = "";
+
+    if (choice === 'A' || choice === 'B') {
+        if (random < 0.5) {
+            winAmount = 100;
+            lossAmount = 0;
+            winImageSrc = "win_100.png";
+        } else {
+            winAmount = 100;
+            lossAmount = 250;
+            winImageSrc = "win_100.png";
+            lossImageSrc = "loss_250.png";
+        }
+    } else {
+        if (random < 0.5) {
+            winAmount = 50;
+            lossAmount = 0;
+            winImageSrc = "win_50.png";
+        } else {
+            winAmount = 50;
+            lossAmount = 50;
+            winImageSrc = "win_50.png";
+            lossImageSrc = "loss_50.png";
+        }
+    }
+
+    money += (winAmount - lossAmount);
+
+    let gameRoundData = {
+        playerName: playerName,
+        round: trial,
+        choice: choice,
+        reactionTime: reactionTime,
+        winAmount: winAmount,
+        lossAmount: lossAmount,
+        currentMoney: money
+    };
+
+    gameData.push(gameRoundData);
+
+    document.getElementById("money").textContent = "金額: $" + money;
+
+    let resultContainer = document.getElementById("result");
+    resultContainer.innerHTML = ""; // Clear previous images
+
+    // Insert images based on win or loss
+    if (winImageSrc !== "") {
+        let winImage = document.createElement("img");
+        winImage.src = winImageSrc;
+        winImage.alt = "Win Image";
+        resultContainer.appendChild(winImage);
+    }
+    if (lossImageSrc !== "") {
+        let lossImage = document.createElement("img");
+        lossImage.src = lossImageSrc;
+        lossImage.alt = "Loss Image";
+        resultContainer.appendChild(lossImage);
+    }
+
+    document.getElementById("trial").textContent = "第幾次: " + trial;
+
+    if (trial === 250) {
+        alert("遊戲結束! 你最後的收益: $" + money +"結束後請將檔案回傳問卷！");
+        writeGameDataToFile();
+    } else {
+        alert("第" + trial + "次結束，請按確定繼續遊戲");
+        trial++;
+    }
+}
+
+function writeGameDataToFile() {
+    let dataString = "Player Name, Round, Choice, Reaction Time, Win Amount, Loss Amount, Current Money\n";
+    gameData.forEach(function(roundData) {
+        dataString += roundData.playerName + ", " + roundData.round + ", " + roundData.choice + ", " + roundData.reactionTime + ", " + roundData.winAmount + ", " + roundData.lossAmount + ", " + roundData.currentMoney + "\n";
+    });
+
+    let blob = new Blob([dataString], { type: "text/plain" });
+    let url = URL.createObjectURL(blob);
+    let a = document.createElement("a");
+    a.href = url;
+    a.download = playerName + "_game_data.txt";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    resetGame();
+}
+
+function resetGame() {
+    playerName = "";
+    money = 2000;
+    trial = 1;
+    gameData = [];
+    document.getElementById("startScreen").classList.add("visible");
+    document.getElementById("instructionScreen").classList.remove("visible");
+    document.getElementById("gameScreen").classList.remove("visible");
+    document.getElementById("name").value = "";
+    document.getElementById("money").textContent = "金額: $" + money;
+    document.getElementById("result").innerHTML = "";
+}
+
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Enter') {
+        if (document.getElementById("startScreen").classList.contains("visible")) {
+            startGame();
+        } else if (document.getElementById("instructionScreen").classList.contains("visible")) {
+            showInstruction();
+        } 
+    }
+});
+</script>
+
+</body>
+</html>
