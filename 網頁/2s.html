@@ -294,7 +294,7 @@ function writeGameDataToFile() {
     let url = URL.createObjectURL(blob);
     let a = document.createElement("a");
     a.href = url;
-    a.download = playerName + "_game_data.txt";
+    a.download = playerName + "_2s_game_data.txt";
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
